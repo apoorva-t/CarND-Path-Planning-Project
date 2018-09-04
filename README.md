@@ -12,6 +12,21 @@ Each waypoint in the list contains  [x,y,s,dx,dy] values. x and y are the waypoi
 
 The highway's waypoints loop around so the frenet s value, distance along the road, goes from 0 to 6945.554.
 
+### Reflection
+
+Steps taken to drive on a highway with max speed limit of 50mph without colliding into other cars:
+1. As explained in the project walk-through video, my first goal was to be able to drive in my current lane without hitting the car in front, by reducing speed when needed.
+2. The next step was to integrate lane changes when needed by defining a Finite State Machine with states 'Keep Lane', 'Lane Change Left' and 'Lane Change Right'. A set of four cost functions is used to choose the next lane and velocity to drive at:
+Cost Function 1: Penalize driving too fast or too slow
+Cost Function 2: Penalize changing lanes
+Cost Function 3: Penalize getting too close to the car in front
+Cost Function 4: Penalize getting in way of car behind during lane change
+If the car in front in the same lane is within the safe distance of our car, then the speed of our car is reduced by a constant number so as not to exceed maximum acceleration limit.
+3. Generating trajectory: For this, I followed the method used in the walk-through video, where anchor points from the trajectory generated in the previous cycle are used along with anchor points from the intended trajectory in the current cycle to fit a spline curve. The remaining points from the previous path along with waypoints on the trajectory generated in the new cycle are fed to the simulator.
+4. To avoid rapid lane changes, and the car overshooting and returning to the same lane, lane changes in consecutive processing cycles are not allowed.
+
+Using the JMT generation method taught in class to get equations for s and d and get new path waypoints from them would likely yield a smoother transition wrt max acceleration and jerk limits. Implementing intermediate states of 'Prepare Lane Change Left' and 'Prepare Lane Change Right' where the car slows down or picks up speed in its current lane in preparation for LCL/LCR would lead to a more efficient path planner - with the car reaching its goal sooner. I was not able to pick the right parameters to decide when to move to the PLCL/PLCR states, and will look into it as a future step.
+
 ## Basic Build Instructions
 
 1. Clone this repo.
